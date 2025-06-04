@@ -5,7 +5,7 @@
 */
 
 // C++98 definitions
-#if USING_STD(CPP98)
+#if CPP_VER == 98
 
 // hey, make unit tests for string class =]
 

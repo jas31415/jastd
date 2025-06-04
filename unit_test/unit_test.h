@@ -8,7 +8,7 @@ class UnitTest
 {
 public:
 	// C++98 body
-#if USING_STD(CPP98)
+#if CPP_VER == 98
 	virtual ~UnitTest() = 0;
 
 	virtual void PerformTests() = 0;

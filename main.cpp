@@ -129,7 +129,6 @@ int main()
 			}
 			else if (!argument.compare(registeredInputs[8]))
 			{
-				std::cout << ~argument.compare(registeredInputs[8]) << std::endl;
 				argumentFlags |= STANDARD_VERSION;
 			}
 			else if (!argument.compare(registeredInputs[9]))

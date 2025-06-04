@@ -5,7 +5,7 @@
 using namespace jastd;
 
 /*
-	jastd string98 class definition
+	jastd string98 class definitions
 */
 
 string98::string98() : std::string() {}

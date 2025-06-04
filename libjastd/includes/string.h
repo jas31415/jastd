@@ -19,11 +19,11 @@ namespace jastd
 		bool match_all(const string98& strs, size_t count) const;
 	};
 
-#if USING_STD_MINIMUM(CPP11)
+#if MIN_USING_CPP(11)
 	/*
 		jastd std::string wrapper for C++11
 	*/
-	class string11 : public std::string;
+	class string11 : public std::string
 	{
 	public:
 		explicit string11();
@@ -33,7 +33,7 @@ namespace jastd
 		string11 substr(char delim, size_t pos = 0) const;
 		bool match_any(const string11& strs, size_t count) const;
 		bool match_all(const string11& strs, size_t count) const;
-	}
+	};
 #endif /* 11 */
 
 	DEFINE_GENERIC_TYPE(string)
