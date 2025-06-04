@@ -15,6 +15,7 @@ namespace jastd
 		string98(const std::string& str);
 
 		string98 substr(char delim, size_t pos = 0) const;
+		bool match(const string98& str) const;
 		bool match_any(const string98& strs, size_t count) const;
 		bool match_all(const string98& strs, size_t count) const;
 	};
@@ -31,6 +32,7 @@ namespace jastd
 		string11(const std::string& str);
 
 		string11 substr(char delim, size_t pos = 0) const;
+		bool match(const string11& str) const;
 		bool match_any(const string11& strs, size_t count) const;
 		bool match_all(const string11& strs, size_t count) const;
 	};

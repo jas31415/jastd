@@ -30,7 +30,20 @@ string98 string98::substr(char delim, size_t pos) const
 }
 
 /**
- *  @brief  Compare to multiple strings for single match.
+ *  @brief  Look at a string for a match.
+ *  @param str  String to read from.
+ *  @return  If this string matches with `str`.
+ * 
+ *	Passes `str` as argument inside of std::string::compare() and returns the boolean inverse of its result.
+ *	Even though it's an unnecessary wrapping on the surface, seeing `if (!strA.compare(strB))` is not exactly intuitive.
+ */
+bool string98::match(const string98& str) const
+{
+	return !compare(str);
+}
+
+/**
+ *  @brief  Look at multiple strings for single match.
  *  @param strs  Array of strings to read from.
  *  @param count  Number of string in this array.
  *  @return  If this string matches any of the string contained at `&strs`.
@@ -38,7 +51,7 @@ string98 string98::substr(char delim, size_t pos) const
  * 
  * 	Takes the elements at `strs` and one by one passes these as argument inside of std::string::compare().
  *  If `count` exceeds the size of `strs`, it's possible that std::out_of_range is thrown.
- * 	Predicting the exception wuld require try-catching, so this overhead is deferred to the user (that's you).
+ * 	Predicting the exception would require try-catching, so this overhead is deferred to the user (that's you).
  */
 bool string98::match_any(const string98& strs, size_t count) const
 {
@@ -54,7 +67,7 @@ bool string98::match_any(const string98& strs, size_t count) const
 }
 
 /**
- *  @brief  Compare to multiple strings.
+ *  @brief  Look at multiple strings for a full match.
  *  @param strs  Array of strings to read from.
  *  @param count  Number of string in this array.
  *  @return  If this string matches all of the strings contained at `&strs`.
