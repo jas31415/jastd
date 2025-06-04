@@ -119,27 +119,27 @@ int main()
 			{
 				argumentFlags |= SELECT;
 			}
-			else if (!argument.compare(registeredInputs[6]))
+			else if (argument.match(registeredInputs[6]))
 			{
 				argumentFlags |= TEST;
 			}
-			else if (!argument.compare(registeredInputs[7]))
+			else if (argument.match(registeredInputs[7]))
 			{
 				argumentFlags |= LIST;
 			}
-			else if (!argument.compare(registeredInputs[8]))
+			else if (argument.match(registeredInputs[8]))
 			{
 				argumentFlags |= STANDARD_VERSION;
 			}
-			else if (!argument.compare(registeredInputs[9]))
+			else if (argument.match(registeredInputs[9]))
 			{
 				argumentFlags |= JASTD_VERSION;
 			}
-			else if (!argument.compare(registeredInputs[10]))
+			else if (argument.match(registeredInputs[10]))
 			{
 				argumentFlags |= HELP;
 			}
-			else if (!argument.compare(registeredInputs[11]))
+			else if (argument.match(registeredInputs[11]))
 			{
 				argumentFlags |= QUIT;
 			}
@@ -159,4 +159,3 @@ int main()
 
 	return 0;
 }
-
