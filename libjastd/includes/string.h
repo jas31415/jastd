@@ -38,5 +38,8 @@ namespace jastd
 	};
 #endif /* 11 */
 
-	DEFINE_GENERIC_TYPE(string)
+	// jastd generic typedef for std::string
+	TYPEDEF_GENERIC(string)
+
+	string a;
 }

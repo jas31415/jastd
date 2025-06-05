@@ -17,11 +17,11 @@
 #	define CPP_V 26
 #endif
 
-// @brief  A developer friendly macro for determining the colloquial C++ version number.
+// @brief  A developer friendly macro for determing if a colloquial C++ version is being used.
 // @returns  If the colloquial C++ version number is equal to `ver_num`.
 #define USING_CPP(ver_num) CPP_V == ver_num
 
-// @brief  A developer friendly macro for determining if the colloquial C++ version number is .
+// @brief  A developer friendly macro for determining if a colloquial C++ version or its previous versions are being used.
 // @returns  If the colloquial C++ version number is the equal to or larger than `ver_num`.
 #define MIN_USING_CPP(ver_num) USING_CPP(98) ? USING_CPP(ver_num) : CPP_V >= ver_num
 
@@ -30,13 +30,11 @@
 
 	#define nullptr NULL
 
-	// jastd generic type for std::string wrappers
-	#define DEFINE_GENERIC_TYPE(type) typedef type##98 type;
+	#define TYPEDEF_GENERIC(type) typedef type##98 type;
 
 #endif /* 98 */
 #if USING_CPP(11)
 
-	// jastd generic type for std::string wrappers
-	#define DEFINE_GENERIC_TYPE(type) typedef type##11 type;
+	#define TYPEDEF_GENERIC(type) typedef type##11 type;
 
 #endif /* 11 */
