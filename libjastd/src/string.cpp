@@ -53,11 +53,8 @@ bool string98::match(const string98& str) const
 /*
 	needs docu
 */
-bool string98::match_any(const string98& str, ...) const
+bool string98::match_any(int count, const string98& str, ...) const
 {
-	// a string that for some reason takes place at the end of every params list
-	const char* end_of_params = "P\200";
-
 	// variadic arguments list
 	std::va_list args;
 	va_start(args, str);
@@ -65,19 +62,14 @@ bool string98::match_any(const string98& str, ...) const
 	// match result var
 	bool is_match = false;
 
-	// current argument to look through
-	string98 arg = str;
-
-	do
+	for (string98 arg = str; --count < 0; arg = va_arg(args, const char*))
 	{
 		is_match = match(arg);
 		if (is_match)
 		{
 			break;
 		}
-		arg = va_arg(args, const char *);
 	}
-	while (!arg.substr(0ULL, (arg.size() >= 2) ? 2 : size()).match(end_of_params));
 
 	va_end(args);
 
@@ -111,11 +103,8 @@ bool string98::match_any(const string98& strs, size_t count) const
 /*
 	needs docu
 */
-bool string98::match_all(const string98& str, ...) const
+bool string98::match_all(int count, const string98& str, ...) const
 {
-	// a string that for some reason takes place at the end of every params list
-	const char* end_of_params = "P\200";
-
 	// variadic arguments list
 	std::va_list args;
 	va_start(args, str);
@@ -135,7 +124,7 @@ bool string98::match_all(const string98& str, ...) const
 		}
 		arg = va_arg(args, const char *);
 	}
-	while (!arg.substr(0ULL, (arg.size() >= 2) ? 2 : size()).match(end_of_params));
+	while (--count > 0);
 
 	va_end(args);
 
