@@ -37,7 +37,7 @@ string98 string98::substr(size_t pos, size_t count) const
 }
 
 /**
- *  @brief  Look at a string for a match.
+ *  @brief  Test if strings match.
  *  @param str  String to read from.
  *  @return  If this string matches with `str`.
  * 
@@ -77,7 +77,7 @@ bool string98::match_any(int count, const string98& str, ...) const
 }
 
 /**
- *  @brief  Look at multiple strings for single match.
+ *  @brief  Look for any strings that match.
  *  @param strs  Array of strings to read from.
  *  @param count  Number of string in this array.
  *  @return  If this string matches any of the string contained at `&strs`.
@@ -89,15 +89,19 @@ bool string98::match_any(int count, const string98& str, ...) const
  */
 bool string98::match_any(const string98& strs, size_t count) const
 {
+	// match result var
+	bool is_match = false;
+
 	for (int idx = 0; idx < count; idx++)
 	{
-		const bool is_match = compare((&strs)[idx]) == 0;
+		is_match = match(strs);
 		if (is_match)
 		{
-			return true;
+			break;
 		}
 	}
-	return false;
+
+	return is_match;
 }
 
 /*
@@ -110,7 +114,7 @@ bool string98::match_all(int count, const string98& str, ...) const
 	va_start(args, str);
 
 	// match result var
-	bool is_match = false;
+	bool is_match = true;
 
 	for (string98 arg = str; --count < 0; arg = va_arg(args, const char*))
 	{
@@ -127,7 +131,7 @@ bool string98::match_all(int count, const string98& str, ...) const
 }
 
 /**
- *  @brief  Look at multiple strings for a full match.
+ *  @brief  Look for any strings that do not match.
  *  @param strs  Array of strings to read from.
  *  @param count  Number of string in this array.
  *  @return  If this string matches all of the strings contained at `&strs`.
@@ -139,13 +143,17 @@ bool string98::match_all(int count, const string98& str, ...) const
  */
 bool string98::match_all(const string98& strs, size_t count) const
 {
+	// match result var
+	bool is_match = true;
+
 	for (int idx = 0; idx < count; idx++)
 	{
-		const bool is_match = compare((&strs)[idx]) == 0;
+		is_match = match(strs);
 		if (!is_match)
 		{
-			return false;
+			break;
 		}
 	}
-	return true;
+	
+	return is_match;
 }
