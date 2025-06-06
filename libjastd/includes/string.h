@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <sstream>
 #include "macros.h"
 
 namespace jastd
@@ -17,10 +18,16 @@ namespace jastd
 		string98 substr(char delim, size_t pos = 0) const;
 		string98 substr(size_t pos = 0, size_t count = npos) const;
 		bool match(const string98& str) const;
-		bool match_any(const string98& str, ...) const;
+		bool match_any(int count, const string98& str, ...) const;
 		bool match_any(const string98& strs, size_t count) const;
-		bool match_all(const string98& str, ...) const;
+		bool match_all(int count, const string98& str, ...) const;
 		bool match_all(const string98& strs, size_t count) const;
+		
+		template<class Type>
+		static string98 to_string(Type param)
+		{
+			return static_cast<std::ostringstream*>(&(std::ostringstream() << param))->str();
+		}
 	};
 	
 	#if MIN_USING_CPP(11)
@@ -39,10 +46,8 @@ namespace jastd
 		bool match_any(const string11& strs, size_t count) const;
 		bool match_all(const string11& strs, size_t count) const;
 	};
-#endif /* 11 */
+#endif /* 11 ... */
 
 	// jastd generic typedef for std::string
 	TYPEDEF_GENERIC(string)
-
-	string a;
 }
