@@ -82,11 +82,11 @@ int main()
 
 			// set argument flags
 			argumentFlags |=
-				(argument.match_any("-e", "--everything"))
+				(argument.match_any(VARARGS("-e", "--everything")))
 					? EVERYTHING :
-				(argument.match_any("-a", "--available"))
+				(argument.match_any(VARARGS("-a", "--available")))
 					? AVAILABLE :
-				(argument.match_any("-s", "--select"))
+				(argument.match_any(VARARGS("-s", "--select")))
 					? SELECT :
 				(argument.match("test"))
 					? TEST :
@@ -112,6 +112,15 @@ int main()
 
 		switch (argumentFlags)
 		{
+			case STANDARD_VERSION:
+				std::cout << "C++" << string::to_string(CPP_V) << std::endl;
+				break;
+			case JASTD_VERSION:
+				std::cout << "jastd-" << JASTD_V_STR << ((_DEBUG) ? "-deb" : "") << std::endl;
+				break;
+			case HELP:
+				std::cout << helpMessage << std::endl;
+				break;
 			case QUIT:
 				quit = true;
 			break;
