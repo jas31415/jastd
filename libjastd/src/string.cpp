@@ -57,6 +57,7 @@ bool string98::match_any(int count, const string98& str, ...) const
 {
 	// variadic arguments list
 	std::va_list args;
+
 	va_start(args, str);
 
 	// match result var
@@ -112,19 +113,14 @@ bool string98::match_all(int count, const string98& str, ...) const
 	// match result var
 	bool is_match = false;
 
-	// current argument to look through
-	string98 arg = str;
-
-	do
+	for (string98 arg = str; --count < 0; arg = va_arg(args, const char*))
 	{
 		is_match = match(arg);
 		if (!is_match)
 		{
 			break;
 		}
-		arg = va_arg(args, const char *);
 	}
-	while (--count > 0);
 
 	va_end(args);
 
