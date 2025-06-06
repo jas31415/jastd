@@ -1,6 +1,8 @@
 #include "string.h"
 #include <stdexcept>
 #include <cassert>
+#include <cstdarg>
+#include <typeinfo>
 
 using namespace jastd;
 
@@ -29,6 +31,12 @@ string98 string98::substr(char delim, size_t pos) const
 	return std::string::substr(pos, find(' ', pos));
 }
 
+string98 string98::substr(size_t pos, size_t count) const
+{
+	assert (pos < size() && "pos was too large");
+	return std::string::substr(pos, count);
+}
+
 /**
  *  @brief  Look at a string for a match.
  *  @param str  String to read from.
@@ -40,6 +48,40 @@ string98 string98::substr(char delim, size_t pos) const
 bool string98::match(const string98& str) const
 {
 	return !compare(str);
+}
+
+/*
+	needs docu
+*/
+bool string98::match_any(const string98& str, ...) const
+{
+	// a string that for some reason takes place at the end of every params list
+	const char* end_of_params = "P\200";
+
+	// variadic arguments list
+	std::va_list args;
+	va_start(args, str);
+
+	// match result var
+	bool is_match = false;
+
+	// current argument to look through
+	string98 arg = str;
+
+	do
+	{
+		is_match = match(arg);
+		if (is_match)
+		{
+			break;
+		}
+		arg = va_arg(args, const char *);
+	}
+	while (!arg.substr(0ULL, (arg.size() >= 2) ? 2 : size()).match(end_of_params));
+
+	va_end(args);
+
+	return is_match;
 }
 
 /**
@@ -64,6 +106,40 @@ bool string98::match_any(const string98& strs, size_t count) const
 		}
 	}
 	return false;
+}
+
+/*
+	needs docu
+*/
+bool string98::match_all(const string98& str, ...) const
+{
+	// a string that for some reason takes place at the end of every params list
+	const char* end_of_params = "P\200";
+
+	// variadic arguments list
+	std::va_list args;
+	va_start(args, str);
+
+	// match result var
+	bool is_match = false;
+
+	// current argument to look through
+	string98 arg = str;
+
+	do
+	{
+		is_match = match(arg);
+		if (!is_match)
+		{
+			break;
+		}
+		arg = va_arg(args, const char *);
+	}
+	while (!arg.substr(0ULL, (arg.size() >= 2) ? 2 : size()).match(end_of_params));
+
+	va_end(args);
+
+	return is_match;
 }
 
 /**
