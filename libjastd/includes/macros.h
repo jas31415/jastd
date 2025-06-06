@@ -1,5 +1,8 @@
 #pragma once
 
+// jastd version number
+#define JASTD_V_STR "1.0.0"
+
 // i know this looks ugly but it's rather efficient
 #if __cplusplus == 199711L
 #	define CPP_V 98
