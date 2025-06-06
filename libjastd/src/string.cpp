@@ -1,8 +1,7 @@
-#include "string.h"
+#include "string.hpp"
 #include <stdexcept>
 #include <cassert>
 #include <cstdarg>
-#include <typeinfo>
 
 using namespace jastd;
 

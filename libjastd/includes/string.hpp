@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <sstream>
-#include "macros.h"
+#include "macros.hpp"
 
 namespace jastd
 {
