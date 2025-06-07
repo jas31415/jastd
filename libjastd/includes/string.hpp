@@ -51,3 +51,5 @@ namespace jastd
 	// jastd generic typedef for std::string
 	TYPEDEF_GENERIC(string)
 }
+
+#include "../src/string.tpp"
