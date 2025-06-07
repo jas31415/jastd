@@ -113,7 +113,7 @@ int main()
 		switch (argumentFlags)
 		{
 			case STANDARD_VERSION:
-				std::cout << "C++" << string::to_string(CPP_V) << std::endl;
+				std::cout << "C++" << to_string<string>(CPP_V) << std::endl;
 				break;
 			case JASTD_VERSION:
 				std::cout << "jastd-" << JASTD_V_STR << ((_DEBUG) ? "-deb" : "") << std::endl;

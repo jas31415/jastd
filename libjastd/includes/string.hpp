@@ -22,12 +22,6 @@ namespace jastd
 		bool match_any(const string98& strs, size_t count) const;
 		bool match_all(int count, const string98& str, ...) const;
 		bool match_all(const string98& strs, size_t count) const;
-		
-		template<class Type>
-		static string98 to_string(Type param)
-		{
-			return static_cast<std::ostringstream*>(&(std::ostringstream() << param))->str();
-		}
 	};
 	
 	#if MIN_USING_CPP(11)
@@ -50,6 +44,22 @@ namespace jastd
 
 	// jastd generic typedef for std::string
 	TYPEDEF_GENERIC(string)
+
+	/*
+		templated helpers! =] fun stuff
+	*/
+
+#if USING_CPP(98)
+	template<typename str_t, class param_t>
+	str_t to_string(const param_t& param);
+#else
+	template<typename str_t = string, class param_t>
+	str_t to_string(const param_t& param);
+#endif /* 98 */
 }
 
+
+// i'm not adding src/ to the includes folders
+// aside of my suspicion that this will result in unresolved paths
+// i don't want to clog up the include list with all the source files
 #include "../src/string.tpp"
