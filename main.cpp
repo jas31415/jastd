@@ -11,7 +11,7 @@
 */
 #include <iostream>
 
-#include "string.h"
+#include "string.hpp"
 
 using namespace jastd;
 
@@ -46,7 +46,7 @@ int main()
 		"\ttest <-a | --available>\t\t\t\tPerforms unit tests on all headers available in this C++ Standard version\n"
 		"\ttest <-s | --select> <header1> [<header2> ...]\tPerforms unit tests on each header listed\n"
 		"\tlist <-e | --everything>\t\t\tLists all headers\n"
-		"\tlist <-a | --available>\t\t\t\tLists all header available in this C++ Standard version\n"
+		"\tlist <-a | --available>\t\t\t\tLists all headers available in this C++ Standard version\n"
 		"\tstd\t\t\t\t\t\tShows the C++ Standard version currently being used\n"
 		"\tjastd\t\t\t\t\t\tShows the jastd version currently being used\n"
 		"\thelp\t\t\t\t\t\tShows this menu\n"
