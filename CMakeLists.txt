@@ -17,7 +17,7 @@ include_directories(libjastd/includes)
 set(LIB_NAME ${PROJECT_NAME}${BUILD_POSTFIX})
 add_library(${LIB_NAME} SHARED
 	libjastd/src/macros.cpp
-	libjastd/src/string.cpp
+	libjastd/src/string.cpp	libjastd/src/string.tpp
 )
 
 # this is for the unit tests executable
