@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <sstream>
 #include "macros.hpp"
 
 namespace jastd
@@ -24,7 +23,8 @@ namespace jastd
 		bool match_all(const string98& strs, size_t count) const;
 	};
 	
-	#if MIN_USING_CPP(11)
+#if MIN_USING_CPP(11)
+
 	/*
 		jastd std::string wrapper for C++11
 	*/
@@ -40,6 +40,7 @@ namespace jastd
 		bool match_any(const string11& strs, size_t count) const;
 		bool match_all(const string11& strs, size_t count) const;
 	};
+
 #endif /* 11 ... */
 
 	// jastd generic typedef for std::string
@@ -48,16 +49,15 @@ namespace jastd
 	/*
 		templated helpers! =] fun stuff
 	*/
-
 #if USING_CPP(98)
-	template<typename str_t, class param_t>
+
+	template<class param_t>
+	std::string to_string(const param_t& param);
+	template<class str_t, class param_t>
 	str_t to_string(const param_t& param);
-#else
-	template<typename str_t = string, class param_t>
-	str_t to_string(const param_t& param);
+
 #endif /* 98 */
 }
-
 
 // i'm not adding src/ to the includes folders
 // aside of my suspicion that this will result in unresolved paths

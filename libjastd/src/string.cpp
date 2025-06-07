@@ -1,5 +1,4 @@
 #include "string.hpp"
-#include <stdexcept>
 #include <cassert>
 #include <cstdarg>
 
@@ -15,7 +14,7 @@ string98::string98(const std::string &str) : std::string(str) {}
 
 /**
  * 	@brief  Get a substring using a delimiter.
- * 	@param delim  Character to terminate substring at. Substring terminates at '0/' if no case of @a delim is found.
+ * 	@param delim  Character to terminate substring at. Substring terminates at '0/' if no case of `delim` is found.
  *  @param pos  Position to start the substring from. (default 0)
  *  @return  The new string.
  *  @throw  std::out_of_range If `pos` > size().
@@ -30,6 +29,17 @@ string98 string98::substr(char delim, size_t pos) const
 	return std::string::substr(pos, find(' ', pos));
 }
 
+/**
+ *  @brief  Get a substring.
+ *  @param pos  Index of first character. (default 0)
+ *  @param count  Number of characters in substring. (default remainder)
+ *  @return  The new string.
+ *  @throw  std::out_of_range  If __pos > size().
+ *
+ *  Construct and return a new string using the `count` characters starting at `pos`.
+ * 	If the string is too short, use the remainder of the characters.
+ *	If `pos` is beyond the end of the string, std::out_of_range is thrown.
+ */
 string98 string98::substr(size_t pos, size_t count) const
 {
 	assert (pos < size() && "pos was too large");
