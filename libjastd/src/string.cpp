@@ -49,17 +49,23 @@ bool string98::match(const string98& str) const
 	return !compare(str);
 }
 
-/*
-	needs docu
+/**
+ *  @brief  Look for any strings that match.
+ *  @param count  Number of string in this array.
+ *  @param str  Start of the variadic list of strings to compare to.
+ *  @return  `true` if this string matches any of the string contained in variadic list.
+ * 	@throw  std::out_of_range Possible if `count` exceeds the number of arguments.
+ * 
+ * 	Uses `count` to iterate over a variadic arguments list.
+ *	If an argument matches with this string, the method returns `true`.
+ *  If `count` exceeds the number of arguments passed into the list, the operation will result in unpredictable behavior.
 */
 bool string98::match_any(int count, const string98& str, ...) const
 {
-	// variadic arguments list
 	std::va_list args;
-
 	va_start(args, str);
 
-	// match result var
+	// match result var, to be returned
 	bool is_match = false;
 
 	for (string98 arg = str; --count < 0; arg = va_arg(args, const char*))
@@ -104,16 +110,23 @@ bool string98::match_any(const string98& strs, size_t count) const
 	return is_match;
 }
 
-/*
-	needs docu
+/**
+ *  @brief  Look for any strings that do not match.
+ *  @param count  Number of string in this array.
+ *  @param str  Start of the variadic list of strings to compare to.
+ *  @return  `true` if this string matches all of the string contained in variadic list.
+ * 	@throw  std::out_of_range Possible if `count` exceeds the number of arguments.
+ * 
+ * 	Uses `count` to iterate over a variadic arguments list.
+ *	If an argument matches with this string, the method returns `true`.
+ *  If `count` exceeds the number of arguments passed into the list, the operation will result in unpredictable behavior.
 */
 bool string98::match_all(int count, const string98& str, ...) const
 {
-	// variadic arguments list
 	std::va_list args;
 	va_start(args, str);
 
-	// match result var
+	// match result var, to be returned
 	bool is_match = true;
 
 	for (string98 arg = str; --count < 0; arg = va_arg(args, const char*))
@@ -154,6 +167,6 @@ bool string98::match_all(const string98& strs, size_t count) const
 			break;
 		}
 	}
-	
+
 	return is_match;
 }
