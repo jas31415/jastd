@@ -15,12 +15,16 @@ namespace jastd
 		string98(const std::string& str);
 
 		string98 substr(char delim, size_t pos = 0) const;
-		string98 substr(size_t pos = 0, size_t count = npos) const;
+		string98 substr(size_t pos = 0, size_t count = npos) const;		
 		bool match(const string98& str) const;
 		bool match_any(int count, const string98& str, ...) const;
 		bool match_any(const string98& strs, size_t count) const;
 		bool match_all(int count, const string98& str, ...) const;
 		bool match_all(const string98& strs, size_t count) const;
+		string98 trim(char c) const;
+		string98 trim_l(char c) const;
+		string98 trim_r(char c) const;
+		// string98 split(char delim, bool incl) const;
 	};
 	
 #if MIN_USING_CPP(11)

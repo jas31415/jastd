@@ -25,7 +25,7 @@ string98::string98(const std::string &str) : std::string(str) {}
  */
 string98 string98::substr(char delim, size_t pos) const
 {
-	assert(pos < size() && "pos was too large");
+	assert((pos < size() || empty()) && "pos was not smaller than size()");
 	return std::string::substr(pos, find(' ', pos));
 }
 
@@ -42,7 +42,7 @@ string98 string98::substr(char delim, size_t pos) const
  */
 string98 string98::substr(size_t pos, size_t count) const
 {
-	assert (pos < size() && "pos was too large");
+	assert((pos < size() || empty()) && "pos was not smaller than size()");
 	return std::string::substr(pos, count);
 }
 
@@ -179,4 +179,40 @@ bool string98::match_all(const string98& strs, size_t count) const
 	}
 
 	return is_match;
+}
+
+/**
+ *  @brief Trim a string.
+ *  @param c  The character to trim off.
+ *  @return  A substring with `c` trimmed off either side.
+ *  
+ *  Returns a chain-call of `trim_r(char)` and `trim_l(char)`.
+ */
+string98 string98::trim(char c) const
+{
+	return trim_r(c).trim_l(c);
+}
+
+/**
+ *  @brief Trim the left side of a string.
+ *  @param c  The character to trim off.
+ *  @return  A substring with `c` trimmed off the left side.
+ *  
+ *  Returns a substring that starts at the first index that isn't `c`.
+ */
+string98 string98::trim_l(char c) const
+{
+	return substr(find_first_not_of(c) % npos);
+}
+
+/**
+ *  @brief Trim the right side of a string.
+ *  @param c  The character to trim off.
+ *  @return  A substring with `c` trimmed off the right side.
+ *  
+ *  Returns a substring that starts at the last index that isn't `c`.
+ */
+string98 string98::trim_r(char c) const
+{
+	return substr(0ULL, find_last_not_of(c) + 1);
 }

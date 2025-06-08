@@ -81,6 +81,8 @@ int main()
 			string argument = command.substr(' ', previousIndex);
 			previousIndex += argument.size() + 1;
 
+			argument = argument.trim(' ');
+
 			// set argument flags
 			if (argument.match_any(VARARGS("-e", "--everything")))
 				argumentFlags |= EVERYTHING;
@@ -134,6 +136,7 @@ int main()
 				std::cerr << "'" + command + "' is not a valid command. Write 'help' to see a list of commands.\n";
 			break;
 			// cases without behavior
+			case CLEAR:;
 			case INVALID:;
 		}
 
