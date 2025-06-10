@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "macros.hpp"
 
 namespace jastd
@@ -24,7 +25,7 @@ namespace jastd
 		string98 trim(char c) const;
 		string98 trim_l(char c) const;
 		string98 trim_r(char c) const;
-		// string98 split(char delim, bool incl) const;
+		std::vector<string98> split(char delim, bool keep_delim = true) const;
 	};
 	
 #if MIN_USING_CPP(11)

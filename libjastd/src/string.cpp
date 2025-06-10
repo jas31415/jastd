@@ -26,7 +26,7 @@ string98::string98(const std::string &str) : std::string(str) {}
 string98 string98::substr(char delim, size_t pos) const
 {
 	assert((pos < size() || empty()) && "pos was not smaller than size()");
-	return std::string::substr(pos, find(' ', pos));
+	return std::string::substr(pos, find(delim, pos) - pos);
 }
 
 /**
@@ -215,4 +215,26 @@ string98 string98::trim_l(char c) const
 string98 string98::trim_r(char c) const
 {
 	return substr(0ULL, find_last_not_of(c) + 1);
+}
+
+/**
+ *  @brief  Split a string up into smaller strings using a delimiter.
+ *  @param delim  Character to split the string at.
+ *  @param keep_delim  If the returned strings should be trimmed of the delimiter. (default true)
+ *  @return  A vector of strings.
+ */
+std::vector<string98> string98::split(char delim, bool keep_delim) const
+{
+	// return container for the strings
+	std::vector<string98> retstrs;
+
+	if (!empty())
+	{
+		for (size_t pos = 0; pos < length(); pos += retstrs.back().length() + (int)keep_delim)
+		{
+			retstrs.push_back(substr(delim, pos));
+		}
+	}
+
+	return retstrs;
 }
