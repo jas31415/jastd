@@ -28,6 +28,15 @@ namespace jastd
 		std::vector<string98> split(char delim, bool keep_delim = false) const;
 	};
 	
+#if USING_CPP(98)
+
+	template<class param_t>
+	std::string to_string(const param_t& param);
+	template<class str_t, class param_t>
+	str_t to_string(const param_t& param);
+
+#endif /* 98 */
+	
 #if MIN_USING_CPP(11)
 
 	/*
@@ -54,14 +63,7 @@ namespace jastd
 	/*
 		templated helpers! =] fun stuff
 	*/
-#if USING_CPP(98)
 
-	template<class param_t>
-	std::string to_string(const param_t& param);
-	template<class str_t, class param_t>
-	str_t to_string(const param_t& param);
-
-#endif /* 98 */
 }
 
 // i'm not adding src/ to the includes folders
