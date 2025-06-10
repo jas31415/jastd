@@ -230,7 +230,7 @@ std::vector<string98> string98::split(char delim, bool keep_delim) const
 
 	if (!empty())
 	{
-		for (size_t pos = 0; pos < length(); pos += retstrs.back().length() + (int)keep_delim)
+		for (size_t pos = 0; pos < length(); pos += retstrs.back().length() + (int)!keep_delim)
 		{
 			retstrs.push_back(substr(delim, pos));
 		}

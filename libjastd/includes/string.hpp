@@ -25,7 +25,7 @@ namespace jastd
 		string98 trim(char c) const;
 		string98 trim_l(char c) const;
 		string98 trim_r(char c) const;
-		std::vector<string98> split(char delim, bool keep_delim = true) const;
+		std::vector<string98> split(char delim, bool keep_delim = false) const;
 	};
 	
 #if MIN_USING_CPP(11)
