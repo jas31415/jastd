@@ -1,9 +1,9 @@
 /*
-	main.cpp is the file where unit tests are performed on the wrapper classes
+	main.cpp is the file where the unit tester lives
 
 	note for developers
 		this program is not complicated but needs to compile in all standards
-		thus i advise you to restrict yourself to C++98 features, and deal with deprecations using pre-processor statements
+		thus i advise you to restrict yourself to C++98 features, and deal with deprecations using pp directives
 		i will leave you with a good resource for C++98 here: https://cplusplus.com/doc/oldtutorial/
 
 	despite the library itself being formatted to match the standard library's style,
@@ -15,14 +15,10 @@
 
 using namespace jastd;
 
-/*
-	flags that correspondent to different behaviors the tester should execute
-
-	C++98 style scoped enum
-*/
+// flags that correspondent to different behaviors the tester should execute
 namespace ArgumentFlags
 {
-	enum ArgumentFlagsImpl
+	enum ArgumentFlagsImpl // C++98 style scoped enum
 	{
 		CLEAR				= 0b0000000000,
 		TEST				= 0b0000000001,
@@ -55,64 +51,73 @@ int main()
 	
 	std::cout << welcomeMessage + helpMessage << std::endl;
 
-	// using ArgumentFlags namespace for readability's sake
-	using namespace ArgumentFlags;
-
 	bool quit = false;
 	while (!quit)
 	{
+		// bitfield to tick while parsing arguments
+		unsigned int argumentFlags = ArgumentFlags::CLEAR;
+		
 		// string container for the command fetched from user input
 		string command = "";
-
-		// index where the last argument stopped, 0 if a new argument is being parsed
-		size_t previousIndex = 0;
-
-		// bitfield to tick while parsing arguments
-		unsigned int argumentFlags = CLEAR;
 
 		// request command
 		std::cout << "> ";
 		std::getline(std::cin, command);
 
+		// arguments to be substringed from the command
+		std::vector<string> arguments = command.split(' ');
+
+		// typedeffing this because the for loop already looks horrendous without the auto keyword
+		typedef std::vector<string>::const_iterator vciter;
+		
+		using namespace ArgumentFlags;
+
 		// parse arguments
-		while (previousIndex < command.size())
+		if (!arguments.empty())
 		{
-			// argument to be substringed from the command
-			string argument = command.substr(' ', previousIndex);
-			previousIndex += argument.size() + 1;
-
-			argument = argument.trim(' ');
-
-			// set argument flags
-			if (argument.match_any(VARARGS("-e", "--everything")))
-				argumentFlags |= EVERYTHING;
-			else if (argument.match_any(VARARGS("-a", "--available")))
-				argumentFlags |= AVAILABLE;
-			else if (argument.match_any(VARARGS("-s", "--select")))
-				argumentFlags |= SELECT;
-			else if (argument.match("test"))
-				argumentFlags |= TEST;
-			else if (argument.match("list"))
-				argumentFlags |= LIST;
-			else if (argument.match("std"))
-				argumentFlags |= STANDARD_VERSION;
-			else if (argument.match("jastd"))
-				argumentFlags |= JASTD_VERSION;
-			else if (argument.match("help"))
-				argumentFlags |= HELP;
-			else if (argument.match("quit"))
-				argumentFlags |= QUIT;
-			else
-				argumentFlags = INVALID; // an invalid argument has occured...
-
-			// ...and thus it prints an error message to console output
-			if (argumentFlags == INVALID)
+			for (vciter argumentIterator = arguments.begin();
+				argumentIterator != arguments.end();
+				argumentIterator++)
 			{
-				std::cerr << "'" + argument + "' in '" + command + "' is not a valid argument. Write 'help' to see a list of commands. \n";
-				break;
+				const string& argument = argumentIterator->trim(' ');
+
+				// discard argument if empty
+				if (argument.empty())
+				{
+					continue;
+				}
+
+				// handle argument setting logic
+				switch (argumentFlags)
+				{
+					// this will be at the start of parsing
+					case CLEAR:
+						if (argument.match("test"))
+							argumentFlags |= TEST;
+						else if (argument.match("list"))
+							argumentFlags |= LIST;
+						else if (argument.match("std"))
+							argumentFlags |= STANDARD_VERSION;
+						else if (argument.match("jastd"))
+							argumentFlags |= JASTD_VERSION;
+						else if (argument.match("help"))
+							argumentFlags |= HELP;
+						else if (argument.match("quit"))
+							argumentFlags |= QUIT;
+					break;
+					// this will be at the second parsing attempt
+					// these will all be invalid if not alone
+					case JASTD_VERSION:
+					case STANDARD_VERSION:
+					case HELP:
+					case QUIT:
+						argumentFlags = INVALID;
+					break;
+				}
 			}
 		}
-
+		
+		// execute behavior coherent to the flagged states
 		switch (argumentFlags)
 		{
 			// case TEST | EVERYTHING:
