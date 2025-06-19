@@ -29,8 +29,9 @@ namespace jastd
 		string98 trim_r(char c) const;
 		std::vector<string98> split(char delim, bool keep_delim = false) const;
 		int occurs(char c) const;
-		// string98 copy() const;
 		// to do: implement character categories for trimming all whitespaces
+		
+		static string98 join(const string98& strs, size_t count, const char* between = "");
 	};
 	
 #if USING_CPP(98)

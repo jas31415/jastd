@@ -12,7 +12,7 @@ string98::string98() : std::string() {}
 string98::string98(const char *str_literal) : std::string(str_literal) {}
 string98::string98(const std::string &str) : std::string(str) {}
 
-string98::operator const char *()
+string98::operator const char*()
 {
 	return this->data();
 }
@@ -113,9 +113,9 @@ bool string98::match_any(const string98& strs, size_t count) const
 	// match result var
 	bool is_match = false;
 
-	for (int idx = 0; idx > count; idx++)
+	for (int idx = 0; idx < count; idx++)
 	{
-		is_match = match(strs);
+		is_match = match((&strs)[idx]);
 		if (is_match)
 		{
 			break;
@@ -144,7 +144,7 @@ bool string98::match_all(int count, const string98& str, ...) const
 	// match result var, to be returned
 	bool is_match = true;
 
-	for (string98 arg = str; --count < 0; arg = va_arg(args, const char*))
+	for (string98 arg = str; --count > 0 && is_match; arg = va_arg(args, const char*))
 	{
 		is_match = match(arg);
 		if (!is_match)
@@ -174,13 +174,9 @@ bool string98::match_all(const string98& strs, size_t count) const
 	// match result var
 	bool is_match = true;
 
-	for (int idx = 0; idx < count; idx++)
+	for (int idx = 0; idx < count && is_match; idx++)
 	{
-		is_match = match(strs);
-		if (!is_match)
-		{
-			break;
-		}
+		is_match = match((&strs)[idx]);
 	}
 
 	return is_match;
@@ -246,6 +242,25 @@ std::vector<string98> string98::split(char delim, bool keep_delim) const
 	}
 
 	return retstrs;
+}
+
+/**
+ *  @brief  Merges strings from a list with an optional separator between them.
+ * 	@param strs  Object at the start of the array.
+ *  @param count  Number of strings to join.
+ *  @param between  Characters to put between each item. (default "")
+ * 	@return  The new string.
+ */
+string98 string98::join(const string98& strs, size_t count, const char* between)
+{
+	string98 retstr = strs;
+	
+	for (int idx = 1; idx < count; idx++)
+	{		
+		retstr += between + (&strs)[idx];
+	}
+	
+	return retstr;
 }
 
 /**
