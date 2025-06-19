@@ -19,18 +19,6 @@
 
 using namespace jastd;
 
-// An exception to be thrown when an argument is determined invalid. To be caught in `main()`
-class argument_exception : public std::exception
-{
-public:
-	argument_exception(const char* arg) throw()	: std::exception(), arg(arg) {}
-	virtual ~argument_exception() throw() {}
-	virtual const char* what() const throw() { return ("'" + arg + "' is not a valid argument.").c_str(); }
-
-private:
-	string arg;
-};
-
 struct AppState
 {
 	bool doQuit;
@@ -48,7 +36,7 @@ void PrintHelp();
 
 
 int main()
-{
+{	
 	AppState state;
 
 	std::cout << "Welcome to the unit tester for jastd!\n";
@@ -62,9 +50,9 @@ int main()
 		{
 			state.argumentFlags = DetermineArgumentFlags(state.arguments);
 		}
-		catch (const argument_exception& exception)
+		catch (std::invalid_argument& exception)
 		{
-			std::cout << exception.what() << std::endl; // this shit returns weird shit gng
+			std::cout << "'" << exception.what() << "' was not a valid argument.\n" << std::endl;
 			continue;
 		}
 		ExecuteAppState(state);
@@ -111,7 +99,6 @@ unsigned int DetermineArgumentFlags(const std::vector<string>& arguments)
 	typedef std::vector<string>::const_iterator const_iterator;
 	for (const_iterator it = arguments.begin(); it != arguments.end(); it++)
 	{
-		// to do: implement character categories for trimming all whitespaces
 		const string ARGUMENT = it->trim(' ');
 		
 		// ignore argument if it's empty
@@ -137,7 +124,7 @@ unsigned int DetermineArgumentFlags(const std::vector<string>& arguments)
 				else if (ARGUMENT.match("quit"))
 					flags = ArgumentFlags::QUIT;
 				else
-					throw argument_exception(ARGUMENT.c_str());
+					throw std::invalid_argument(ARGUMENT);
 			break;
 			// check for argument
 			case ArgumentFlags::TEST:
@@ -152,8 +139,10 @@ unsigned int DetermineArgumentFlags(const std::vector<string>& arguments)
 				else if (ARGUMENT.match_any(VARARGS("-a", "--available")))
 					flags |= ArgumentFlags::AVAILABLE;
 				else
-					throw argument_exception(ARGUMENT.c_str());
+					throw std::invalid_argument(ARGUMENT);
 			break;
+			default:
+				throw std::invalid_argument(ARGUMENT);
 		}
 	}
 	
