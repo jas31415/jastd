@@ -26,6 +26,7 @@ namespace jastd
 		string98 trim_l(char c) const;
 		string98 trim_r(char c) const;
 		std::vector<string98> split(char delim, bool keep_delim = false) const;
+		int occurs(char c) const;
 	};
 	
 #if USING_CPP(98)
@@ -34,9 +35,9 @@ namespace jastd
 	std::string to_string(const param_t& param);
 	template<class str_t, class param_t>
 	str_t to_string(const param_t& param);
-
-#endif /* 98 */
 	
+#endif /* 98 */
+
 #if MIN_USING_CPP(11)
 
 	/*
@@ -59,14 +60,9 @@ namespace jastd
 
 	// jastd generic typedef for std::string
 	TYPEDEF_GENERIC(string)
-
-	/*
-		templated helpers! =] fun stuff
-	*/
-
 }
 
 // i'm not adding src/ to the includes folders
-// aside of my suspicion that this will result in unresolved paths
-// i don't want to clog up the include list with all the source files
+// aside of my suspicion that this will result in unresolved paths...
+// ... i don't want to clog up the includes with all the template files
 #include "../src/string.tpp"

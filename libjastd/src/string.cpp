@@ -221,7 +221,7 @@ string98 string98::trim_r(char c) const
  *  @brief  Split a string up into smaller strings using a delimiter.
  *  @param delim  Character to split the string at.
  *  @param keep_delim  If the returned strings should be trimmed of the delimiter. (default true)
- *  @return  A vector of strings.
+ *  @return  A vector of substrings.
  */
 std::vector<string98> string98::split(char delim, bool keep_delim) const
 {
@@ -230,6 +230,10 @@ std::vector<string98> string98::split(char delim, bool keep_delim) const
 
 	if (!empty())
 	{
+		// roughly determine nr of strings from the amount of time delim occurs
+		retstrs.reserve(occurs(delim));
+		
+		// push the rets =]
 		for (size_t pos = 0; pos < length(); pos += retstrs.back().length() + (int)!keep_delim)
 		{
 			retstrs.push_back(substr(delim, pos));
@@ -237,4 +241,24 @@ std::vector<string98> string98::split(char delim, bool keep_delim) const
 	}
 
 	return retstrs;
+}
+
+/**
+ *  @brief  Determine the amount of times a character occurs in a string.
+ *  @param c  Character to look for.
+ *  @return  Number of times `c` occurs.
+ * 
+ *  Increments a counter for each iteration in a for loop.
+ *  This loop checks for find(c), thus returning the number of occurances.
+ */
+int string98::occurs(char c) const
+{
+	int retcount = 0;
+	
+	for (size_t idx = 0; idx != npos; idx = find(c, idx))
+	{
+		retcount++;
+	}
+	
+	return retcount;
 }
