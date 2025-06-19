@@ -12,6 +12,11 @@ string98::string98() : std::string() {}
 string98::string98(const char *str_literal) : std::string(str_literal) {}
 string98::string98(const std::string &str) : std::string(str) {}
 
+string98::operator const char *()
+{
+	return this->data();
+}
+
 /**
  * 	@brief  Get a substring using a delimiter.
  * 	@param delim  Character to terminate substring at. Substring terminates at '0/' if no case of `delim` is found.
@@ -262,3 +267,4 @@ int string98::occurs(char c) const
 	
 	return retcount;
 }
+
