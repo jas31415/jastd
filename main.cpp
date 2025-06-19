@@ -19,6 +19,22 @@
 
 using namespace jastd;
 
+// Exception thrown for faulty command line interface arguments
+class cli_argument_error : public std::runtime_error
+{
+public:
+	explicit cli_argument_error(const string& cli_arg) : std::runtime_error(cli_arg) {}
+    virtual ~cli_argument_error() throw() {}
+};
+
+// Exception thrown for faulty command line inteface commands (primary arguments)
+class cli_command_error : public std::runtime_error
+{
+public:
+	explicit cli_command_error(const string& cli_cmd) : std::runtime_error(cli_cmd) {}
+    virtual ~cli_command_error() throw() {}
+};
+
 struct AppState
 {
 	bool doQuit;
@@ -34,9 +50,8 @@ void PrintVersion();
 void PrintStandard();
 void PrintHelp();
 
-
 int main()
-{	
+{
 	AppState state;
 
 	std::cout << "Welcome to the unit tester for jastd!\n";
@@ -50,9 +65,14 @@ int main()
 		{
 			state.argumentFlags = DetermineArgumentFlags(state.arguments);
 		}
-		catch (std::invalid_argument& exception)
+		catch (cli_argument_error& exception)
 		{
 			std::cout << "'" << exception.what() << "' was not a valid argument.\n" << std::endl;
+			continue;
+		}
+		catch (cli_command_error& exception)
+		{
+			std::cout << "'" << exception.what() << "' was not a valid command.\n" << std::endl;
 			continue;
 		}
 		ExecuteAppState(state);
@@ -124,7 +144,7 @@ unsigned int DetermineArgumentFlags(const std::vector<string>& arguments)
 				else if (ARGUMENT.match("quit"))
 					flags = ArgumentFlags::QUIT;
 				else
-					throw std::invalid_argument(ARGUMENT);
+					throw cli_command_error(ARGUMENT);
 			break;
 			// check for argument
 			case ArgumentFlags::TEST:
@@ -139,10 +159,10 @@ unsigned int DetermineArgumentFlags(const std::vector<string>& arguments)
 				else if (ARGUMENT.match_any(VARARGS("-a", "--available")))
 					flags |= ArgumentFlags::AVAILABLE;
 				else
-					throw std::invalid_argument(ARGUMENT);
+					throw cli_argument_error(ARGUMENT);
 			break;
 			default:
-				throw std::invalid_argument(ARGUMENT);
+				throw cli_argument_error(ARGUMENT);
 		}
 	}
 	
