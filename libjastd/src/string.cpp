@@ -255,7 +255,7 @@ int string98::occurs(char c) const
 {
 	int retcount = 0;
 	
-	for (size_t idx = 0; idx != npos; idx = find(c, idx))
+	for (size_t idx = 0; idx < length(); idx = find(c, idx + 1))
 	{
 		retcount++;
 	}
