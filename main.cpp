@@ -8,147 +8,214 @@
 
 	despite the library itself being formatted to match the standard library's style,
 	the unit testing part of this program will be using recommended C++ formatting
-*/
-#include <iostream>
+	*/
 
+// C++ headers
+#include <iostream>
+#include <exception>
+
+// jastd headers
 #include "string.hpp"
 
 using namespace jastd;
 
-// flags that correspondent to different behaviors the tester should execute
+// An exception to be thrown when an argument is determined invalid. To be caught in `main()`
+class argument_exception : public std::exception
+{
+public:
+	argument_exception(const char* arg) throw()	: std::exception(), arg(arg) {}
+	virtual ~argument_exception() throw() {}
+	virtual const char* what() const throw() { return ("'" + arg + "' is not a valid argument.").c_str(); }
+
+private:
+	string arg;
+};
+
+struct AppState
+{
+	bool doQuit;
+	std::vector<string> arguments;
+	unsigned int argumentFlags;
+};
+
+// forwarded declarations
+std::vector<string> FetchNewArguments();
+unsigned int DetermineArgumentFlags(const std::vector<string>&);
+void ExecuteAppState(AppState&);
+void PrintVersion();
+void PrintStandard();
+void PrintHelp();
+
+
+int main()
+{
+	AppState state;
+
+	std::cout << "Welcome to the unit tester for jastd!\n";
+	PrintHelp();
+	std::cout << std::endl;
+	
+	while (!state.doQuit)
+	{
+		state.arguments = FetchNewArguments();
+		try
+		{
+			state.argumentFlags = DetermineArgumentFlags(state.arguments);
+		}
+		catch (const argument_exception& exception)
+		{
+			std::cout << exception.what() << std::endl; // this shit returns weird shit gng
+			continue;
+		}
+		ExecuteAppState(state);
+	}
+	
+	return 0;
+}
+
+// Flags that correspondent to different behaviors the tester should execute.
 namespace ArgumentFlags
 {
 	enum ArgumentFlagsImpl // C++98 style scoped enum
 	{
-		CLEAR				= 0b0000000000,
-		TEST				= 0b0000000001,
-		LIST				= 0b0000000010,
-		EVERYTHING			= 0b0000000100,
-		AVAILABLE			= 0b0000001000,
-		SELECT				= 0b0000010000,
-		STANDARD_VERSION	= 0b0000100000,
-		JASTD_VERSION		= 0b0001000000,
-		HELP				= 0b0010000000,
-		QUIT				= 0b0100000000,
-		INVALID				= 0b1000000000
+		CLEAR				= 0b00000000,
+		TEST				= 0b00000001,
+		LIST				= 0b00000010,
+		EVERYTHING			= 0b00000100,
+		AVAILABLE			= 0b00001000,
+		SELECT				= 0b00010000,
+		STANDARD_VERSION	= 0b00100000,
+		JASTD_VERSION		= 0b01000000,
+		HELP				= 0b10000000,
+		QUIT				= 0b11111111
 	};
 };
 
-int main()
+// Requests input from the user through the cli, then splits this into separate arguments.
+std::vector<string> FetchNewArguments()
 {
-	const string welcomeMessage = "Welcome to the unit tester for jastd!\n";
-	const string helpMessage =
-		"Consider the following\n"
-		"- test <-e | --everything>\t\t\t\tPerforms unit tests on all headers\n"
-		"- test <-a | --available>\t\t\t\tPerforms unit tests on all headers available in this C++ Standard version\n"
-		"- test <-s | --select> <header1> [<header2> ...]\tPerforms unit tests on each header listed\n"
-		"- list <-e | --everything>\t\t\t\tLists all headers\n"
-		"- list <-a | --available>\t\t\t\tLists all headers available in this C++ Standard version\n"
-		"- std\t\t\t\t\t\t\tShows the C++ Standard version currently being used\n"
-		"- jastd\t\t\t\t\t\t\tShows the jastd version currently being used\n"
-		"- help\t\t\t\t\t\t\tShows this menu\n"
-		"- quit\t\t\t\t\t\t\tCloses this program\n";
+	string input;
 	
-	std::cout << welcomeMessage + helpMessage << std::endl;
+	std::cout << "> ";
+	std::getline(std::cin, input);
+	
+	// optimization: implement move semantics functionality
+	return input.split(' ');
+}
 
-	bool quit = false;
-	while (!quit)
+// Returns a series of argument flags determined by the parameter
+unsigned int DetermineArgumentFlags(const std::vector<string>& arguments)
+{
+	unsigned int flags = 0;
+	
+	typedef std::vector<string>::const_iterator const_iterator;
+	for (const_iterator it = arguments.begin(); it != arguments.end(); it++)
 	{
-		// bitfield to tick while parsing arguments
-		unsigned int argumentFlags = ArgumentFlags::CLEAR;
+		// to do: implement character categories for trimming all whitespaces
+		const string ARGUMENT = it->trim(' ');
 		
-		// string container for the command fetched from user input
-		string command = "";
-
-		// request command
-		std::cout << "> ";
-		std::getline(std::cin, command);
-
-		// arguments to be substringed from the command
-		std::vector<string> arguments = command.split(' ');
-
-		// typedeffing this because the for loop already looks horrendous without the auto keyword
-		typedef std::vector<string>::const_iterator vciter;
-		
-		using namespace ArgumentFlags;
-
-		// parse arguments
-		if (!arguments.empty())
+		// ignore argument if it's empty
+		if (ARGUMENT.empty())
 		{
-			for (vciter argumentIterator = arguments.begin();
-				argumentIterator != arguments.end();
-				argumentIterator++)
-			{
-				const string& argument = argumentIterator->trim(' ');
-
-				// discard argument if empty
-				if (argument.empty())
+			continue;
+		}
+		
+		switch (flags)
+		{
+			// check for command (first argument)
+			case ArgumentFlags::CLEAR:
+				if (ARGUMENT.match("test"))
+					flags = ArgumentFlags::TEST;
+				else if (ARGUMENT.match("list"))
+					flags = ArgumentFlags::LIST;
+				else if (ARGUMENT.match("std"))
+					flags = ArgumentFlags::STANDARD_VERSION;
+				else if (ARGUMENT.match("jastd"))
+					flags = ArgumentFlags::JASTD_VERSION;
+				else if (ARGUMENT.match("help"))
+					flags = ArgumentFlags::HELP;
+				else if (ARGUMENT.match("quit"))
+					flags = ArgumentFlags::QUIT;
+				else
+					throw argument_exception(ARGUMENT.c_str());
+			break;
+			// check for argument
+			case ArgumentFlags::TEST:
+				if (ARGUMENT.match_any(VARARGS("-s", "--select")))
 				{
+					flags |= ArgumentFlags::SELECT;
 					continue;
 				}
-
-				// handle argument setting logic
-				switch (argumentFlags)
-				{
-					// this will be at the start of parsing
-					case CLEAR:
-						if (argument.match("test"))
-							argumentFlags |= TEST;
-						else if (argument.match("list"))
-							argumentFlags |= LIST;
-						else if (argument.match("std"))
-							argumentFlags |= STANDARD_VERSION;
-						else if (argument.match("jastd"))
-							argumentFlags |= JASTD_VERSION;
-						else if (argument.match("help"))
-							argumentFlags |= HELP;
-						else if (argument.match("quit"))
-							argumentFlags |= QUIT;
-					break;
-					// this will be at the second parsing attempt
-					// these will all be invalid if not alone
-					case JASTD_VERSION:
-					case STANDARD_VERSION:
-					case HELP:
-					case QUIT:
-						argumentFlags = INVALID;
-					break;
-				}
-			}
+			case ArgumentFlags::LIST:
+				if (ARGUMENT.match_any(VARARGS("-e", "--everything")))
+					flags |= ArgumentFlags::EVERYTHING;
+				else if (ARGUMENT.match_any(VARARGS("-a", "--available")))
+					flags |= ArgumentFlags::AVAILABLE;
+				else
+					throw argument_exception(ARGUMENT.c_str());
+			break;
 		}
-		
-		// execute behavior coherent to the flagged states
-		switch (argumentFlags)
-		{
-			// case TEST | EVERYTHING:
-			// break;
-			case STANDARD_VERSION:
-				std::cout << "C++" + to_string(CPP_V) + '\n';
-			break;
-			case JASTD_VERSION:
-			{
-				const string debugPostfix = _DEBUG ? "-deb" : "";
-				std::cout << "jastd-" JASTD_V_STR + debugPostfix + '\n';
-			}
-			break;
-			case HELP:
-				std::cout << helpMessage + '\n';
-			break;
-			case QUIT:
-				quit = true;
-			break;
-			default:
-				std::cerr << "'" + command + "' is not a valid command. Write 'help' to see a list of commands.\n";
-			break;
-			// cases without behavior
-			case CLEAR:;
-			case INVALID:;
-		}
-
-		// to make space between commands and clear buffer
-		// refrain from using std::endl; anywhere else
-		std::cout << std::endl;
 	}
+	
+	return flags;
+}
 
-	return 0;
+// Performs various actions depending on the argument flags passed into it.
+void ExecuteAppState(AppState& state)
+{
+	using namespace ArgumentFlags;
+	switch (state.argumentFlags)
+	{
+		case TEST | SELECT:
+		break;
+		case TEST | EVERYTHING:
+		break;
+		case TEST | AVAILABLE:
+		break;
+		case LIST | EVERYTHING:
+		break;
+		case LIST | AVAILABLE:
+		break;
+		case JASTD_VERSION:
+			PrintVersion();
+		break;
+		case STANDARD_VERSION:
+			PrintStandard();
+		break;
+		case HELP:
+			PrintHelp();
+		break;
+		case QUIT:
+			state.doQuit = true;
+		break;
+	}
+	std::cout << std::endl;
+}
+
+void PrintVersion()
+{
+	const string version = "jastd-" JASTD_V_STR + string(_DEBUG ? "-deb" : "");
+	std::cout << version << '\n';
+}
+
+void PrintStandard()
+{
+	const string standard = "C++" + to_string(CPP_V);
+	std::cout << standard << '\n';
+}
+
+void PrintHelp()
+{
+	const string helpMsg =
+	"Consider the following\n"
+	"- test <-e | --everything>\t\t\t\tPerforms unit tests on all headers\n"
+	"- test <-a | --available>\t\t\t\tPerforms unit tests on all headers available in this C++ Standard version\n"
+	"- test <-s | --select> <header1> [<header2> ...]\tPerforms unit tests on each header listed\n"
+	"- list <-e | --everything>\t\t\t\tLists all headers\n"
+	"- list <-a | --available>\t\t\t\tLists all headers available in this C++ Standard version\n"
+	"- std\t\t\t\t\t\t\tShows the C++ Standard version currently being used\n"
+	"- jastd\t\t\t\t\t\t\tShows the jastd version currently being used\n"
+	"- help\t\t\t\t\t\t\tShows this menu\n"
+	"- quit\t\t\t\t\t\t\tCloses this program";
+	std::cout << helpMsg << '\n';
 }
