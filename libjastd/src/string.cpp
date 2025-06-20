@@ -83,13 +83,9 @@ bool string98::match_any(int count, const string98& str, ...) const
 	// match result var, to be returned
 	bool is_match = false;
 
-	for (string98 arg = str; --count > 0; arg = va_arg(args, const char*))
+	for (string98 arg = str; count-- > 0 && !is_match; arg = va_arg(args, const char*))
 	{
 		is_match = match(arg);
-		if (is_match)
-		{
-			break;
-		}
 	}
 
 	va_end(args);
@@ -113,13 +109,9 @@ bool string98::match_any(const string98& strs, size_t count) const
 	// match result var
 	bool is_match = false;
 
-	for (int idx = 0; idx < count; idx++)
+	for (int idx = 0; idx < count && !is_match; idx++)
 	{
 		is_match = match((&strs)[idx]);
-		if (is_match)
-		{
-			break;
-		}
 	}
 
 	return is_match;
@@ -144,13 +136,9 @@ bool string98::match_all(int count, const string98& str, ...) const
 	// match result var, to be returned
 	bool is_match = true;
 
-	for (string98 arg = str; --count > 0 && is_match; arg = va_arg(args, const char*))
+	for (string98 arg = str; count-- > 0 && is_match; arg = va_arg(args, const char*))
 	{
 		is_match = match(arg);
-		if (!is_match)
-		{
-			break;
-		}
 	}
 
 	va_end(args);
