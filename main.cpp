@@ -19,21 +19,33 @@
 
 using namespace jastd;
 
-// Exception thrown for faulty specific command line interface arguments
-class cli_argument_error : public std::runtime_error
+// Some command line interface stuff.
+namespace CLI
 {
-public:
-	explicit cli_argument_error(const string98& cli_arg) : std::runtime_error(cli_arg) {}
-    virtual ~cli_argument_error() throw() {}
-};
+	// Exception thrown for faulty specific command line interface arguments.
+	class ArgumentError : public std::runtime_error
+	{
+	public:
+		explicit ArgumentError(const string98& argument) : std::runtime_error(argument) {}
+		virtual ~ArgumentError() throw() {}
+	};
 
-// Exception thrown for faulty a command line interface command
-class cli_command_error : public std::runtime_error
-{
-public:
-	explicit cli_command_error(const string98& cli_cmd) : std::runtime_error(cli_cmd) {}
-    virtual ~cli_command_error() throw() {}
-};
+	// Exception thrown for faulty a command line interface command.
+	class CommandError : public std::runtime_error
+	{
+	public:
+		explicit CommandError(const string98& command) : std::runtime_error(command) {}
+		virtual ~CommandError() throw() {}
+	};
+
+	// Exception thrown for valid, but unimplemented commands.
+	class UnimplementedError : public std::runtime_error
+	{
+	public:
+		explicit UnimplementedError(const string98& unimplementCommand) : std::runtime_error(unimplementCommand) {}
+		virtual ~UnimplementedError() throw() {}
+	};
+}
 
 struct AppState
 {
@@ -54,28 +66,31 @@ int main()
 {
 	AppState state;
 
-	std::cout << "Welcome to the unit tester for jastd!\n";
-	PrintHelp();
+	std::cout << "\nWelcome to the unit tester for jastd!\n";
+	std::cout << "Type 'help' for details.\n";
 	std::cout << std::endl;
 	
 	while (!state.doQuit)
 	{
 		state.arguments = FetchNewArguments();
+		
 		try
 		{
 			state.argumentFlags = DetermineArgumentFlags(state.arguments);
+			ExecuteCommands(state);		
 		}
-		catch (cli_argument_error& exception)
+		catch (CLI::ArgumentError& exception)
 		{
 			std::cout << "'" << exception.what() << "' is not a valid argument.\n" << std::endl;
-			continue;
 		}
-		catch (cli_command_error& exception)
+		catch (CLI::CommandError& exception)
 		{
 			std::cout << "'" << exception.what() << "' is not a valid command.\n" << std::endl;
-			continue;
 		}
-		ExecuteCommands(state);
+		catch (CLI::UnimplementedError& exception)
+		{
+			std::cout << "'" << exception.what() << "' is a valid command, but is currently not implemented.\n" << std::endl;
+		}
 	}
 	
 	return 0;
@@ -139,7 +154,7 @@ unsigned int DetermineArgumentFlags(const std::vector<string98>& arguments)
 				else if (ARGUMENT.match("jastd"))	flags |= JASTD_VERSION;
 				else if (ARGUMENT.match("help"))	flags |= HELP;
 				else if (ARGUMENT.match("quit"))	flags |= QUIT;
-				else throw cli_argument_error(ARGUMENT);
+				else throw CLI::ArgumentError(ARGUMENT);
 			break;
 			case TEST:
 				if (ARGUMENT.match_any(VARARGS("-s", "--select")))
@@ -150,10 +165,10 @@ unsigned int DetermineArgumentFlags(const std::vector<string98>& arguments)
 			case LIST:
 				if 		(ARGUMENT.match_any(VARARGS("-e", "--everything")))	flags |= EVERYTHING;
 				else if (ARGUMENT.match_any(VARARGS("-a", "--available")))	flags |= AVAILABLE;
-				else throw cli_argument_error(ARGUMENT);
+				else throw CLI::ArgumentError(ARGUMENT);
 			break;
 			default:
-				throw cli_command_error(concat(arguments[0], arguments.size(), " "));
+				throw CLI::CommandError(concat(arguments[0], arguments.size(), " "));
 		}
 	}
 	
@@ -167,14 +182,11 @@ void ExecuteCommands(AppState& state)
 	switch (state.argumentFlags)
 	{
 		case TEST | SELECT:
-		break;
 		case TEST | EVERYTHING:
-		break;
 		case TEST | AVAILABLE:
-		break;
 		case LIST | EVERYTHING:
-		break;
 		case LIST | AVAILABLE:
+			throw CLI::UnimplementedError(concat(state.arguments[0], state.arguments.size(), " "));
 		break;
 		case JASTD_VERSION:
 			PrintVersion();
@@ -189,7 +201,7 @@ void ExecuteCommands(AppState& state)
 			state.doQuit = true;
 		break;
 		default:
-			throw cli_command_error(concat(state.arguments[0], state.arguments.size(), " "));
+			throw CLI::CommandError(concat(state.arguments[0], state.arguments.size(), " "));
 	}
 	std::cout << std::endl;
 }
