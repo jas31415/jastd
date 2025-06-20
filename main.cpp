@@ -12,7 +12,7 @@
 
 // C++ headers
 #include <iostream>
-#include <exception>
+#include <stdexcept>
 
 // jastd headers
 #include "string.hpp"
@@ -23,27 +23,27 @@ using namespace jastd;
 namespace CLI
 {
 	// Exception thrown for faulty specific command line interface arguments.
-	class ArgumentError : public std::runtime_error
+	class ArgumentException : public std::runtime_error
 	{
 	public:
-		explicit ArgumentError(const string98& argument) : std::runtime_error(argument) {}
-		virtual ~ArgumentError() throw() {}
+		explicit ArgumentException(const string98& argument) : std::runtime_error(argument) {}
+		virtual ~ArgumentException() throw() {}
 	};
 
 	// Exception thrown for faulty a command line interface command.
-	class CommandError : public std::runtime_error
+	class CommandException : public std::runtime_error
 	{
 	public:
-		explicit CommandError(const string98& command) : std::runtime_error(command) {}
-		virtual ~CommandError() throw() {}
+		explicit CommandException(const string98& command) : std::runtime_error(command) {}
+		virtual ~CommandException() throw() {}
 	};
 
 	// Exception thrown for valid, but unimplemented commands.
-	class UnimplementedError : public std::runtime_error
+	class UnimplementedException : public std::runtime_error
 	{
 	public:
-		explicit UnimplementedError(const string98& unimplementCommand) : std::runtime_error(unimplementCommand) {}
-		virtual ~UnimplementedError() throw() {}
+		explicit UnimplementedException(const string98& unimplementCommand) : std::runtime_error(unimplementCommand) {}
+		virtual ~UnimplementedException() throw() {}
 	};
 }
 
@@ -79,15 +79,15 @@ int main()
 			state.argumentFlags = DetermineArgumentFlags(state.arguments);
 			ExecuteCommands(state);		
 		}
-		catch (CLI::ArgumentError& exception)
+		catch (CLI::ArgumentException& exception)
 		{
 			std::cout << "'" << exception.what() << "' is not a valid argument.\n" << std::endl;
 		}
-		catch (CLI::CommandError& exception)
+		catch (CLI::CommandException& exception)
 		{
 			std::cout << "'" << exception.what() << "' is not a valid command.\n" << std::endl;
 		}
-		catch (CLI::UnimplementedError& exception)
+		catch (CLI::UnimplementedException& exception)
 		{
 			std::cout << "'" << exception.what() << "' is a valid command, but is currently not implemented.\n" << std::endl;
 		}
@@ -154,7 +154,7 @@ unsigned int DetermineArgumentFlags(const std::vector<string98>& arguments)
 				else if (ARGUMENT.match("jastd"))	flags |= JASTD_VERSION;
 				else if (ARGUMENT.match("help"))	flags |= HELP;
 				else if (ARGUMENT.match("quit"))	flags |= QUIT;
-				else throw CLI::ArgumentError(ARGUMENT);
+				else throw CLI::ArgumentException(ARGUMENT);
 			break;
 			case TEST:
 				if (ARGUMENT.match_any(VARARGS("-s", "--select")))
@@ -165,10 +165,10 @@ unsigned int DetermineArgumentFlags(const std::vector<string98>& arguments)
 			case LIST:
 				if 		(ARGUMENT.match_any(VARARGS("-e", "--everything")))	flags |= EVERYTHING;
 				else if (ARGUMENT.match_any(VARARGS("-a", "--available")))	flags |= AVAILABLE;
-				else throw CLI::ArgumentError(ARGUMENT);
+				else throw CLI::ArgumentException(ARGUMENT);
 			break;
 			default:
-				throw CLI::CommandError(concat(arguments[0], arguments.size(), " "));
+				throw CLI::CommandException(concat(arguments[0], arguments.size(), " "));
 		}
 	}
 	
@@ -186,7 +186,7 @@ void ExecuteCommands(AppState& state)
 		case TEST | AVAILABLE:
 		case LIST | EVERYTHING:
 		case LIST | AVAILABLE:
-			throw CLI::UnimplementedError(concat(state.arguments[0], state.arguments.size(), " "));
+			throw CLI::UnimplementedException(concat(state.arguments[0], state.arguments.size(), " "));
 		break;
 		case JASTD_VERSION:
 			PrintVersion();
@@ -201,7 +201,7 @@ void ExecuteCommands(AppState& state)
 			state.doQuit = true;
 		break;
 		default:
-			throw CLI::CommandError(concat(state.arguments[0], state.arguments.size(), " "));
+			throw CLI::CommandException(concat(state.arguments[0], state.arguments.size(), " "));
 	}
 	std::cout << std::endl;
 }
