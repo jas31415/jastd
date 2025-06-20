@@ -19,33 +19,33 @@
 
 using namespace jastd;
 
-// Exception thrown for faulty command line interface arguments
+// Exception thrown for faulty specific command line interface arguments
 class cli_argument_error : public std::runtime_error
 {
 public:
-	explicit cli_argument_error(const string& cli_arg) : std::runtime_error(cli_arg) {}
+	explicit cli_argument_error(const string98& cli_arg) : std::runtime_error(cli_arg) {}
     virtual ~cli_argument_error() throw() {}
 };
 
-// Exception thrown for faulty command line inteface commands (primary arguments)
+// Exception thrown for faulty a command line interface command
 class cli_command_error : public std::runtime_error
 {
 public:
-	explicit cli_command_error(const string& cli_cmd) : std::runtime_error(cli_cmd) {}
+	explicit cli_command_error(const string98& cli_cmd) : std::runtime_error(cli_cmd) {}
     virtual ~cli_command_error() throw() {}
 };
 
 struct AppState
 {
 	bool doQuit;
-	std::vector<string> arguments;
+	std::vector<string98> arguments;
 	unsigned int argumentFlags;
 };
 
 // forwarded declarations
-std::vector<string> FetchNewArguments();
-unsigned int DetermineArgumentFlags(const std::vector<string>&);
-void ExecuteAppState(AppState&);
+std::vector<string98> FetchNewArguments();
+unsigned int DetermineArgumentFlags(const std::vector<string98>&);
+void ExecuteCommands(AppState&);
 void PrintVersion();
 void PrintStandard();
 void PrintHelp();
@@ -67,15 +67,15 @@ int main()
 		}
 		catch (cli_argument_error& exception)
 		{
-			std::cout << "'" << exception.what() << "' was not a valid argument.\n" << std::endl;
+			std::cout << "'" << exception.what() << "' is not a valid argument.\n" << std::endl;
 			continue;
 		}
 		catch (cli_command_error& exception)
 		{
-			std::cout << "'" << exception.what() << "' was not a valid command.\n" << std::endl;
+			std::cout << "'" << exception.what() << "' is not a valid command.\n" << std::endl;
 			continue;
 		}
-		ExecuteAppState(state);
+		ExecuteCommands(state);
 	}
 	
 	return 0;
@@ -84,7 +84,8 @@ int main()
 // Flags that correspondent to different behaviors the tester should execute.
 namespace ArgumentFlags
 {
-	enum ArgumentFlagsImpl // C++98 style scoped enum
+	// C++98 style scoped enum
+	enum ArgumentFlagsImpl
 	{
 		CLEAR				= 0b00000000,
 		TEST				= 0b00000001,
@@ -100,9 +101,9 @@ namespace ArgumentFlags
 };
 
 // Requests input from the user through the cli, then splits this into separate arguments.
-std::vector<string> FetchNewArguments()
+std::vector<string98> FetchNewArguments()
 {
-	string input;
+	string98 input;
 	
 	std::cout << "> ";
 	std::getline(std::cin, input);
@@ -112,14 +113,14 @@ std::vector<string> FetchNewArguments()
 }
 
 // Returns a series of argument flags determined by the parameter
-unsigned int DetermineArgumentFlags(const std::vector<string>& arguments)
+unsigned int DetermineArgumentFlags(const std::vector<string98>& arguments)
 {
 	unsigned int flags = 0;
 	
-	typedef std::vector<string>::const_iterator const_iterator;
+	typedef std::vector<string98>::const_iterator const_iterator;
 	for (const_iterator it = arguments.begin(); it != arguments.end(); it++)
 	{
-		const string ARGUMENT = it->trim(' ');
+		const string98 ARGUMENT = it->trim(' ');
 		
 		// ignore argument if it's empty
 		if (ARGUMENT.empty())
@@ -127,42 +128,32 @@ unsigned int DetermineArgumentFlags(const std::vector<string>& arguments)
 			continue;
 		}
 		
+		using namespace ArgumentFlags;
+		// otherwise do this shit to determine it
 		switch (flags)
 		{
-			// check for command (first argument)
-			case ArgumentFlags::CLEAR:
-				if (ARGUMENT.match("test"))
-					flags = ArgumentFlags::TEST;
-				else if (ARGUMENT.match("list"))
-					flags = ArgumentFlags::LIST;
-				else if (ARGUMENT.match("std"))
-					flags = ArgumentFlags::STANDARD_VERSION;
-				else if (ARGUMENT.match("jastd"))
-					flags = ArgumentFlags::JASTD_VERSION;
-				else if (ARGUMENT.match("help"))
-					flags = ArgumentFlags::HELP;
-				else if (ARGUMENT.match("quit"))
-					flags = ArgumentFlags::QUIT;
-				else
-					throw cli_command_error(ARGUMENT);
+			case CLEAR:
+				if 		(ARGUMENT.match("test"))	flags |= TEST;
+				else if (ARGUMENT.match("list"))	flags |= LIST;
+				else if (ARGUMENT.match("std"))		flags |= STANDARD_VERSION;
+				else if (ARGUMENT.match("jastd"))	flags |= JASTD_VERSION;
+				else if (ARGUMENT.match("help"))	flags |= HELP;
+				else if (ARGUMENT.match("quit"))	flags |= QUIT;
+				else throw cli_argument_error(ARGUMENT);
 			break;
-			// check for argument
-			case ArgumentFlags::TEST:
+			case TEST:
 				if (ARGUMENT.match_any(VARARGS("-s", "--select")))
 				{
-					flags |= ArgumentFlags::SELECT;
+					flags |= SELECT;
 					continue;
 				}
-			case ArgumentFlags::LIST:
-				if (ARGUMENT.match_any(VARARGS("-e", "--everything")))
-					flags |= ArgumentFlags::EVERYTHING;
-				else if (ARGUMENT.match_any(VARARGS("-a", "--available")))
-					flags |= ArgumentFlags::AVAILABLE;
-				else
-					throw cli_argument_error(ARGUMENT);
+			case LIST:
+				if 		(ARGUMENT.match_any(VARARGS("-e", "--everything")))	flags |= EVERYTHING;
+				else if (ARGUMENT.match_any(VARARGS("-a", "--available")))	flags |= AVAILABLE;
+				else throw cli_argument_error(ARGUMENT);
 			break;
 			default:
-				throw cli_argument_error(ARGUMENT);
+				throw cli_command_error(concat(arguments[0], arguments.size(), " "));
 		}
 	}
 	
@@ -170,7 +161,7 @@ unsigned int DetermineArgumentFlags(const std::vector<string>& arguments)
 }
 
 // Performs various actions depending on the argument flags passed into it.
-void ExecuteAppState(AppState& state)
+void ExecuteCommands(AppState& state)
 {
 	using namespace ArgumentFlags;
 	switch (state.argumentFlags)
@@ -197,34 +188,36 @@ void ExecuteAppState(AppState& state)
 		case QUIT:
 			state.doQuit = true;
 		break;
+		default:
+			throw cli_command_error(concat(state.arguments[0], state.arguments.size(), " "));
 	}
 	std::cout << std::endl;
 }
 
 void PrintVersion()
 {
-	const string version = "jastd-" JASTD_V_STR + string(_DEBUG ? "-deb" : "");
+	const string98 version = "jastd-" JASTD_V_STR + string98(_DEBUG ? "-deb" : "");
 	std::cout << version << '\n';
 }
 
 void PrintStandard()
 {
-	const string standard = "C++" + to_string(CPP_V);
+	const string98 standard = "C++" + to_string(CPP_V);
 	std::cout << standard << '\n';
 }
 
 void PrintHelp()
 {
-	const string helpMsg =
+	const string98 helpMsg =
 	"Consider the following\n"
-	"- test <-e | --everything>\t\t\t\tPerforms unit tests on all headers\n"
-	"- test <-a | --available>\t\t\t\tPerforms unit tests on all headers available in this C++ Standard version\n"
-	"- test <-s | --select> <header1> [<header2> ...]\tPerforms unit tests on each header listed\n"
-	"- list <-e | --everything>\t\t\t\tLists all headers\n"
-	"- list <-a | --available>\t\t\t\tLists all headers available in this C++ Standard version\n"
-	"- std\t\t\t\t\t\t\tShows the C++ Standard version currently being used\n"
-	"- jastd\t\t\t\t\t\t\tShows the jastd version currently being used\n"
-	"- help\t\t\t\t\t\t\tShows this menu\n"
-	"- quit\t\t\t\t\t\t\tCloses this program";
+	"> test <-e | --everything>\t\t\t\tPerforms unit tests on all headers\n"
+	"> test <-a | --available>\t\t\t\tPerforms unit tests on all headers available in this C++ Standard version\n"
+	"> test <-s | --select> <header1> [<header2> ...]\tPerforms unit tests on each header listed\n"
+	"> list <-e | --everything>\t\t\t\tLists all headers\n"
+	"> list <-a | --available>\t\t\t\tLists all headers available in this C++ Standard version\n"
+	"> std\t\t\t\t\t\t\tShows the C++ Standard version currently being used\n"
+	"> jastd\t\t\t\t\t\t\tShows the jastd version currently being used\n"
+	"> help\t\t\t\t\t\t\tShows this menu\n"
+	"> quit\t\t\t\t\t\t\tCloses this program";
 	std::cout << helpMsg << '\n';
 }
