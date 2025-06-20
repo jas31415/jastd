@@ -24,7 +24,7 @@ add_library(${LIB_NAME} SHARED
 set(EXE_NAME ${PROJECT_NAME}-unit-tests${BUILD_POSTFIX})
 add_executable(${EXE_NAME}
 	main.cpp
-	unit_test/unit_test.cpp
+	UnitTesters/UnitTesters.cpp
 )
 # add libjastd as dependency
 add_dependencies(${EXE_NAME} ${LIB_NAME})
