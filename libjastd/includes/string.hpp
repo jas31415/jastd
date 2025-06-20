@@ -31,15 +31,16 @@ namespace jastd
 		int occurs(char c) const;
 		// to do: implement character categories for trimming all whitespaces
 		
-		static string98 join(const string98& strs, size_t count, const char* between = "");
 	};
 	
 #if USING_CPP(98)
 
-	template<class param_t>
+	template<typename param_t>
 	std::string to_string(const param_t& param);
-	template<class str_t, class param_t>
+	template<typename str_t, typename param_t>
 	str_t to_string(const param_t& param);
+	template<typename str_t>
+	str_t concat(const str_t& strs, size_t count, const char* between = "");
 	
 #endif /* 98 */
 
@@ -64,7 +65,9 @@ namespace jastd
 #endif /* 11 ... */
 
 	// jastd generic typedef for std::string
+#ifndef NO_GENERIC_TYPEDEFS
 	TYPEDEF_GENERIC(string)
+#endif
 }
 
 // i'm not adding src/ to the includes folders

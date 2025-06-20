@@ -245,25 +245,6 @@ std::vector<string98> string98::split(char delim, bool keep_delim) const
 }
 
 /**
- *  @brief  Merges strings from a list with an optional separator between them.
- * 	@param strs  Object at the start of the array.
- *  @param count  Number of strings to join.
- *  @param between  Characters to put between each item. (default "")
- * 	@return  The new string.
- */
-string98 string98::join(const string98& strs, size_t count, const char* between)
-{
-	string98 retstr = strs;
-	
-	for (int idx = 1; idx < count; idx++)
-	{		
-		retstr += between + (&strs)[idx];
-	}
-	
-	return retstr;
-}
-
-/**
  *  @brief  Determine the amount of times a character occurs in a string.
  *  @param c  Character to look for.
  *  @return  Number of times `c` occurs.
