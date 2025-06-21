@@ -6,7 +6,7 @@ Whenever I get a proper version up, I'll add some pre-built releases on the GitH
 
 Using it in a project should hopefully be as simple as adding library and the includes to its directory or integrate them into your own folder structure, and then adding the include path.
 
-This project compiles into a `.dll.a` you will find in the `jastd/bin/` folder, and an executable for unit testing which will be present in `unit_test/bin/`.
+This project compiles into a `.a` you will find in the `jastd/bin/` folder, and an executable for unit testing which will be present in `UnitTesters/bin/`.
 
 If you want to use CMake to compile a project with this, the source code's [CMakeLists.txt](CMakeLists.txt) might be sufficient to explain the requirements, but if it ever becomes necessary I can write a little example application to use as reference.
 
