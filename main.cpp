@@ -12,6 +12,7 @@
 
 // C++ headers
 #include <iostream>
+#include <iomanip>
 #include <stdexcept>
 
 // jastd headers
@@ -160,11 +161,8 @@ unsigned int DetermineArgumentFlags(const std::vector<string98>& arguments)
 				if (ARGUMENT.match_any(VARARGS("-s", "--select")))
 				{
 					flags |= SELECT;
-					continue;
 				}
-			case LIST:
-				if 		(ARGUMENT.match_any(VARARGS("-e", "--everything")))	flags |= EVERYTHING;
-				else if (ARGUMENT.match_any(VARARGS("-a", "--available")))	flags |= AVAILABLE;
+				else if (ARGUMENT.match_any(VARARGS("-a", "--all")))	flags |= AVAILABLE;
 				else throw CLI::ArgumentException(ARGUMENT);
 			break;
 			default:
@@ -184,8 +182,7 @@ void ExecuteCommands(AppState& state)
 		case TEST | SELECT:
 		case TEST | EVERYTHING:
 		case TEST | AVAILABLE:
-		case LIST | EVERYTHING:
-		case LIST | AVAILABLE:
+		case LIST:
 			throw CLI::UnimplementedException(concat(state.arguments[0], state.arguments.size(), " "));
 		break;
 		case JASTD_VERSION:
@@ -220,16 +217,28 @@ void PrintStandard()
 
 void PrintHelp()
 {
-	const string98 helpMsg =
-	"Consider the following\n"
-	"> test <-e | --everything>\t\t\t\tPerforms unit tests on all headers\n"
-	"> test <-a | --available>\t\t\t\tPerforms unit tests on all headers available in this C++ Standard version\n"
-	"> test <-s | --select> <header1> [<header2> ...]\tPerforms unit tests on each header listed\n"
-	"> list <-e | --everything>\t\t\t\tLists all headers\n"
-	"> list <-a | --available>\t\t\t\tLists all headers available in this C++ Standard version\n"
-	"> std\t\t\t\t\t\t\tShows the C++ Standard version currently being used\n"
-	"> jastd\t\t\t\t\t\t\tShows the jastd version currently being used\n"
-	"> help\t\t\t\t\t\t\tShows this menu\n"
-	"> quit\t\t\t\t\t\t\tCloses this program";
-	std::cout << helpMsg << '\n';
+	const int fieldWidth = 70;
+	std::cout << std::setiosflags(std::ios_base::left)
+		<< "Consider the following\n"
+		<< std::setw(fieldWidth)
+		<< "> test <-a | --all> [-v | --version <number>]"
+		<< "Performs unit tests on all headers.\n"
+		<< std::setw(fieldWidth)
+		<< "> test <-s | --selection> <header1> [-v | --version <number>] [...]"
+		<< "Performs unit tests on each header listed, optionally from a specific C++ Standard version.\n"
+		<< std::setw(fieldWidth)
+		<< "> list [-v | --version <number>]"
+		<< "Lists all headers, optionally in a specific C++ Standard version.\n"
+		<< std::setw(fieldWidth)
+		<< "> standard"
+		<< "Shows the C++ Standard version currently being used.\n"
+		<< std::setw(fieldWidth)
+		<< "> version"
+		<< "Shows the jastd version currently being used.\n"
+		<< std::setw(fieldWidth)
+		<< "> help"
+		<< "Show this message.\n"
+		<< std::setw(fieldWidth)
+		<< "> quit"
+		<< "Closes this program.\n";
 }
