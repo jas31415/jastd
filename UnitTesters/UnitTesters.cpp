@@ -27,5 +27,5 @@ void StringTester<StringType>::PerformTests()
 template<typename StringType>
 void StringTester<StringType>::NewString_Is_Empty()
 {
-	StringType
+	
 }
