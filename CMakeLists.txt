@@ -3,7 +3,7 @@ set(CMAKE_CXX_STANDARD 98) # <----- ATTENTION ALL BUILDERS! change c++ standard 
 project(jastd-${CMAKE_CXX_STANDARD} CXX)
 
 # set dirs and variables for build ouputs
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/unit_test/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/UnitTesters/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/libjastd/bin)
 if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 	set(BUILD_POSTFIX -deb)
@@ -15,7 +15,7 @@ include_directories(libjastd/includes)
 
 # this generates the .dll etc
 set(LIB_NAME ${PROJECT_NAME}${BUILD_POSTFIX})
-add_library(${LIB_NAME} SHARED
+add_library(${LIB_NAME} STATIC
 	libjastd/src/macros.cpp
 	libjastd/src/string.cpp	libjastd/src/string.tpp
 )
@@ -29,4 +29,4 @@ add_executable(${EXE_NAME}
 # add libjastd as dependency
 add_dependencies(${EXE_NAME} ${LIB_NAME})
 # link the libjastd
-target_link_libraries(${EXE_NAME} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/lib${LIB_NAME}.dll.a)
+target_link_libraries(${EXE_NAME} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/lib${LIB_NAME}.a)

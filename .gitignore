@@ -1,4 +1,4 @@
 .vscode/
 build/
-unit_test/bin/
+UnitTesters/bin/
 libjastd/bin/
