@@ -65,9 +65,7 @@ namespace jastd
 #endif /* 11 ... */
 
 	// jastd generic typedef for std::string
-#ifndef NO_GENERIC_TYPEDEFS
 	TYPEDEF_GENERIC(string)
-#endif
 }
 
 // i'm not adding src/ to the includes folders
